@@ -10,9 +10,20 @@
   "require": {
     "guzzlehttp/guzzle": "^6.1"
   },
+  "require-dev": {
+    "phpunit/phpunit": "^4.8",
+    "mockery/mockery": "*",
+    "classy-org/php-classy-standards": "^1.0"
+  },
   "autoload": {
     "psr-4": {
-      "Classy\\": "src"
+      "Classy\\ConstantContact\\": "src"
     }
-  }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Classy\\ConstantContact\\Tests\\": "tests"
+    }
+  },
+  "version": "1.0.0"
 }

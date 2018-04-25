@@ -1,7 +1,8 @@
 <?php
 
-namespace Classy;
+namespace Classy\ConstantContact;
 
+use GuzzleHttp\Exception\ClientException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -15,7 +16,7 @@ class ConstantContactClient
     /**
      * @var \GuzzleHttp\Client
      */
-    private $client;
+    private $guzzleClient;
 
     /**
      * @var string
@@ -25,20 +26,21 @@ class ConstantContactClient
     /**
      * @param $api_key
      * @param array $options Accept same options as Guzzle constructor
+     * @throws \Exception
      */
     public function __construct($api_key, array $config = [])
     {
         if (!is_string($api_key)) {
-            throw new \Exception("api_key must be a string");
+            throw new \Exception('api_key must be a string');
         }
 
         $this->apiKey = $api_key;
 
         $config = array_merge($config, [
-            'base_uri' => "https://api.constantcontact.com/v2",
+            'base_uri' => 'https://api.constantcontact.com/v2',
         ]);
 
-        $this->client = new \GuzzleHttp\Client($config);
+        $this->guzzleClient = new \GuzzleHttp\Client($config);
     }
 
     /**
@@ -46,6 +48,8 @@ class ConstantContactClient
      *
      * @param $uri
      * @param array $options
+     * @throws RequestException
+     *
      * @return mixed
      */
     public function getData($uri, $options = [])
@@ -59,14 +63,22 @@ class ConstantContactClient
      * @param $method
      * @param string $uri
      * @param array $options
+     * @throws RequestException
+     *
      * @return mixed|ResponseInterface
      */
     public function request($method, $uri = '', array $options = [])
     {
         $options = array_merge($options, [
-            'query' => ['api_key' => $this->apiKey]
+            'query' => 'api_key=' . $this->apiKey
         ]);
-        return $this->client->request($method, $uri, $options);
+
+        try {
+            $response = $this->guzzleClient->request($method, $uri, $options);
+        } catch (ClientException $e) {
+            throw new RequestException($e);
+        }
+        return $response;
     }
 
     /**
@@ -78,6 +90,24 @@ class ConstantContactClient
      */
     public function __call($method, $parameters)
     {
-        return call_user_func_array([$this->client, $method], $parameters);
+        return call_user_func_array([$this->guzzleClient, $method], $parameters);
+    }
+
+    /**
+     * @return \GuzzleHttp\ClientInterface
+     */
+    public function getGuzzleClient()
+    {
+        return $this->guzzleClient;
+    }
+
+    /**
+     *  This is for testing basically Mocking.
+     *
+     * @param $client
+     */
+    public function setGuzzleClient($client)
+    {
+        $this->guzzleClient = $client;
     }
 }
