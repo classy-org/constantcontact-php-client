@@ -1,29 +1,29 @@
 {
-  "name": "classy-org/constantcontact-php-client",
-  "description": "Wrapper around Guzzle Http Client to interact with Constant Contact APIv2",
-  "authors": [
-    {
-      "name": "Steven Holman",
-      "email": "sholman@classy.org"
-    }
-  ],
-  "require": {
-    "guzzlehttp/guzzle": "^6.1"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^4.8",
-    "mockery/mockery": "*",
-    "classy-org/php-classy-standards": "^1.0"
-  },
-  "autoload": {
-    "psr-4": {
-      "Classy\\ConstantContact\\": "src"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Classy\\ConstantContact\\Tests\\": "tests"
-    }
-  },
-  "version": "1.0.0"
+	"name": "classy-org/constantcontact-php-client",
+	"description": "Wrapper around Guzzle Http Client to interact with Constant Contact APIv2",
+	"authors": [
+		{
+			"name": "Steven Holman",
+			"email": "sholman@classy.org"
+		}
+	],
+	"require": {
+		"guzzlehttp/guzzle": "^6.1"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^4.8",
+		"mockery/mockery": "*",
+		"classy-org/php-classy-standards": "^1.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Classy\\ConstantContact\\": "src"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Classy\\ConstantContact\\Tests\\": "tests"
+		}
+	},
+	"version": "1.0.1"
 }
