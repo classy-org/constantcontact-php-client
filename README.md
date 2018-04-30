@@ -19,10 +19,10 @@ require_once '/path/to/your/project/vendor/autoload.php';
 
 ```php
 // Instantiate the client
-$client = new \Classy\ConstantContactClient('fdjfh2jh2kjhkyl62sac'); // use your ConstantContact API key here
+$client = new \Classy\ConstantContactClient('API-KEY', 'ACCESS-TOKEN');
 
 // Make a request. 
-$httpResponse = $client->request('GET', '/contacts');
+$httpResponse = $client->request('GET', 'contacts');
 $contacts = json_decode($httpResponse->getBody()->getContents());
 ```
 
@@ -32,7 +32,7 @@ This client is using Guzzle Http client. Exceptions are thrown when the Http res
 
 ```php
 try {
-    $response = $client->get('/contacts/1123');
+    $response = $client->request('POST', 'path/to/route', ['body' => ['check' => 1]]);
 } catch (Exception $e) {
     if ($e instanceof \GuzzleHttp\Exception\ConnectException) {
         // there was a networking error

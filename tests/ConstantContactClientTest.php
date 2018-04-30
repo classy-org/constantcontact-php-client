@@ -13,6 +13,7 @@ use Mockery;
 class ConstantContactClientTest extends PHPUnit_Framework_TestCase
 {
     const API_KEY = 'key';
+    const SECRET = 'check';
 
     /**
      * @var \Mockery\MockInterface
@@ -31,7 +32,7 @@ class ConstantContactClientTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->client = new ConstantContactClient(self::API_KEY);
+        $this->client = new ConstantContactClient(self::API_KEY, self::SECRET);
         $this->guzzleClientMock = Mockery::mock($this->client->getGuzzleClient())->makePartial();
         $this->client->setGuzzleClient($this->guzzleClientMock);
     }

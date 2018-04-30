@@ -21,23 +21,34 @@ class ConstantContactClient
     /**
      * @var string
      */
-    public $apiKey;
+    private $apiKey;
+
+    /**
+     * @var string
+     */
+    private $access_token;
 
     /**
      * @param $api_key
      * @param array $options Accept same options as Guzzle constructor
      * @throws \Exception
      */
-    public function __construct($api_key, array $config = [])
+    public function __construct($api_key, $access_token, array $config = [])
     {
         if (!is_string($api_key)) {
             throw new \Exception('api_key must be a string');
         }
 
+        if (!is_string($access_token)) {
+            throw new \Exception('api_key must be a string');
+        }
+
         $this->apiKey = $api_key;
+        $this->access_token = $access_token;
 
         $config = array_merge($config, [
-            'base_uri' => 'https://api.constantcontact.com/v2',
+            'base_uri' => 'https://api.constantcontact.com/v2/',
+            'headers'  => ['Authorization' => 'Bearer ' . $this->access_token]
         ]);
 
         $this->guzzleClient = new \GuzzleHttp\Client($config);
