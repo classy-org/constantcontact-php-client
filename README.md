@@ -24,6 +24,27 @@ $client = new \Classy\ConstantContactClient('API-KEY', 'ACCESS-TOKEN');
 // Make a request. 
 $httpResponse = $client->request('GET', 'contacts');
 $contacts = json_decode($httpResponse->getBody()->getContents());
+
+//Or Grab Data Quickly.
+$contacts = $client->getData('contacts');
+
+//Store a Contact Quickly.
+$payload = [
+    'lists' => [
+        [
+            'id' => (string)1
+        ]
+    ],
+    'email_addresses' => [
+        [
+            'email_address' => (string)'person@constantcontact.com'
+        ]
+    ],
+    'first_name' => (string)'My',
+    'last_name'  => (string)'Name',
+];
+$contacts = $client->addContact($payload);
+
 ```
 
 ## Exception handling

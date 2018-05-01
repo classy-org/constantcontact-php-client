@@ -2,7 +2,6 @@
 
 namespace Classy\ConstantContact;
 
-use GuzzleHttp\Exception\ClientException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -40,7 +39,7 @@ class ConstantContactClient
         }
 
         if (!is_string($access_token)) {
-            throw new \Exception('api_key must be a string');
+            throw new \Exception('access_token must be a string');
         }
 
         $this->apiKey = $api_key;
@@ -59,7 +58,6 @@ class ConstantContactClient
      *
      * @param $uri
      * @param array $options
-     * @throws RequestException
      *
      * @return mixed
      */
@@ -74,22 +72,40 @@ class ConstantContactClient
      * @param $method
      * @param string $uri
      * @param array $options
-     * @throws RequestException
      *
      * @return mixed|ResponseInterface
      */
     public function request($method, $uri = '', array $options = [])
     {
-        $options = array_merge($options, [
-            'query' => 'api_key=' . $this->apiKey
-        ]);
+        //Always prepend the api key.
 
-        try {
-            $response = $this->guzzleClient->request($method, $uri, $options);
-        } catch (ClientException $e) {
-            throw new RequestException($e);
+        if (isset($options['query'])) {
+            $options['query']['api_key'] = $this->apiKey;
+        } else {
+            $options['query'] = ['api_key' => $this->apiKey];
         }
-        return $response;
+
+        return $this->guzzleClient->request($method, $uri, $options);
+    }
+
+    /**
+     * Add Contact
+     *
+     * @param array $payload
+     *
+     * @return mixed|ResponseInterface
+     */
+    public function addContact(array $payload)
+    {
+        $query = [];
+        $query['action_by'] = 'ACTION_BY_OWNER';
+
+        $options = [
+            'json'  => $payload,
+            'query' => $query,
+        ];
+
+        return $response = $this->request('POST', 'contacts', $options);
     }
 
     /**

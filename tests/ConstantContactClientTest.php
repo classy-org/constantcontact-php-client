@@ -3,7 +3,6 @@
 namespace Classy\ConstantContact\Tests;
 
 use Classy\ConstantContact\ConstantContactClient;
-use Classy\ConstantContact\RequestException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -41,25 +40,25 @@ class ConstantContactClientTest extends PHPUnit_Framework_TestCase
      * @param string $ExpectedMethod
      * @param string $ExpectedUri
      * @param null|string $ExpectedQuery
-     * @param null|array $ExpectedBody
+     * @param null|array $ExpectedJson
      * @param null|int $ExpectedErrorCode
      */
-    public function buildMockRequest($ExpectedMethod, $ExpectedUri, $ExpectedQuery = null, $ExpectedBody = null, $ExpectedErrorCode = null)
+    public function buildMockRequest($ExpectedMethod, $ExpectedUri, $ExpectedQuery = null, $ExpectedJson = null, $ExpectedErrorCode = null)
     {
         $expectation = $this->guzzleClientMock
             ->shouldReceive('request')
             ->withArgs(
-                function ($method, $uri, $options) use ($ExpectedMethod, $ExpectedUri, $ExpectedQuery, $ExpectedBody) {
+                function ($method, $uri, $options) use ($ExpectedMethod, $ExpectedUri, $ExpectedQuery, $ExpectedJson) {
                     $check = $ExpectedMethod === $method && $ExpectedUri === $uri && $ExpectedQuery === $options['query'];
-                    if (isset($options['body'])) {
-                        return $check && $options['body'] === $ExpectedBody;
+                    if (isset($options['json'])) {
+                        return $check && $options['json'] === $ExpectedJson;
                     }
                     return $check;
                 });
 
         if ($ExpectedErrorCode) {
             $expectation->andThrow(
-                new ClientException('Error', new Request('GET', 'path'), new Response(404)));
+                new ClientException('Error', new Request('GET', ''), new Response(404)));
         } else {
             $expectation->andReturn(new Response(204));
         }
@@ -70,7 +69,7 @@ class ConstantContactClientTest extends PHPUnit_Framework_TestCase
      */
     public function testRequestNormally()
     {
-        $this->buildMockRequest('GET', 'pathing', 'api_key=' . self::API_KEY);
+        $this->buildMockRequest('GET', 'pathing', ['api_key' => self::API_KEY]);
 
         $response = $this->client->request('GET', 'pathing');
         $this->assertEquals(204, $response->getStatusCode());
@@ -81,12 +80,27 @@ class ConstantContactClientTest extends PHPUnit_Framework_TestCase
      */
     public function testClientException()
     {
-        $this->buildMockRequest('POST', 'dreams', 'api_key=' . self::API_KEY, ['check' => 1, 'check2' => 2], 404);
+        $this->buildMockRequest('POST', 'dreams', ['api_key' => self::API_KEY], ['check' => 1, 'check2' => 2], 404);
 
         try {
             $this->client->request('POST', 'dreams', ['body' => ['check' => 1, 'check2' => 2]]);
             $this->fail('Exception Expected');
-        } catch (RequestException $e) {
+        } catch (ClientException $e) {
+            $this->assertEquals(404, $e->getCode());
+        }
+    }
+
+    /**
+     * @covers \Classy\ConstantContact\ConstantContactClient::addContact
+     */
+    public function testAddContactsException()
+    {
+        $this->buildMockRequest('POST', 'contacts', ['action_by' => 'ACTION_BY_OWNER', 'api_key' => self::API_KEY], ['check' => 1, 'check2' => 2], 404);
+
+        try {
+            $this->client->addContact(['check' => 1, 'check2' => 2]);
+            $this->fail('Exception Expected');
+        } catch (ClientException $e) {
             $this->assertEquals(404, $e->getCode());
         }
     }
